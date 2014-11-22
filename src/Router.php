@@ -124,7 +124,13 @@ class Router
                     : 'index';
 
                 // Let's dispatch it!
-                return $controller->$method($matches);
+                if (\method_exists($controller, $method)) {
+                    $ref = new \ReflectionMethod($controller, $method);
+                    if ($ref->isPublic()) {
+                        return $controller->$method($matches);
+                    }
+                    unset($ref);
+                }
             }
         }
         empty($this->config['lazy']) AND return $this->lazy($path);
@@ -184,7 +190,10 @@ class Router
                 $this->inject['template']
             );
             if (\method_exists($ctrl, $method)) {
-                return $controller->$method($params);
+                $ref = new \ReflectionMethod($ctrl, $method);
+                if ($ref->isPublic()) {
+                    return $controller->$method($params);
+                }
             }
         }
         header("HTTP/1.1 404 Not Found");
