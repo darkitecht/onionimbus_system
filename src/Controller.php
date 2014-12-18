@@ -1,5 +1,5 @@
 <?php
-namespace Onionimbus\Hub\Wire;
+namespace Onionimbus\System;
 
 class Controller
 {
