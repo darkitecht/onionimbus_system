@@ -1,14 +1,13 @@
 <?php
 namespace Onionimbus\System;
 
-class Controller
+class Controller extends Common
 {
     public $view;
-    public $db;
 
     public function __construct($db = null, $engine = null) {
+        parent::__construct($db);
         $fqn = explode('\\', \get_class($this));
-        $this->db = $db;
         do {
             $name = \array_pop($fqn);
         } while (!empty($fqn) && empty($name));
