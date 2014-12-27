@@ -13,7 +13,7 @@ class View
      * @param Twig_Environment $engine - Which rendering engine should we employ?
      */
     public function __construct($default_template = '', \Twig_Environment $engine) {
-        if (isset(default_template)) {
+        if (isset($default_template)) {
             $this->default_file = $default_template;
         }
         $this->engine = $template;

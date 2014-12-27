@@ -13,7 +13,6 @@ class Router
 
     public function __construct($routes = [])
     {
-        $found = false;
         foreach ($routes as $i => $r) {
             if (\strpos($i, ':') === false) {
                 if (\preg_match(
@@ -21,26 +20,26 @@ class Router
                         ['.','*'],
                         ['\\.', '.+?'],
                         $i
-                    )
+                    ),
                     $_SERVER['HTTP_HOST']
                 )) {
-                    $this->addRoutes($r, $i);
+                    return $this->addRoutes($r, $i);
                 }
             } elseif (\preg_match(
                 '#^'.\str_replace(
                     ['.','*'],
                     ['\\.', '.+?'],
                     $i
-                )
+                ),
                 $_SERVER['HTTP_HOST'].':'.$_SERVER['SERVER_PORT']
             )) {
-                $this->addRoutes($r, $i);
+                return $this->addRoutes($r, $i);
             }
         }
     }
     
     /**
-     * 
+     * Inject dependencies here
      */
     public function inject($key, $val)
     {
@@ -51,9 +50,8 @@ class Router
      * Parse a route, add it to the index
      *
      * @param array $entry - hostname entry
-     * @param
      */
-    public function addRoutes($entry = [], $index = null)
+    public function addRoutes($entry = [])
     {
         $this->config['lazy'] = !empty($entry['lazy']);
         if (empty($entry['namespace'])) {
@@ -133,7 +131,9 @@ class Router
                 }
             }
         }
-        empty($this->config['lazy']) AND return $this->lazy($path);
+        if (!empty($this->config['lazy'])) {
+            return $this->lazy($path);
+        }
     }
 
     public function getController($dispatch = [])
@@ -151,8 +151,10 @@ class Router
             ? $dispatch[0]
             : 'Index';
         // Let's figure out the controller!
-        if (!empty($this->config['namespace'])) &&
-            (strpos($ctrl, '\\') === false && $this->config['namespace'] !== '\\')
+        if (
+            !empty($this->config['namespace'])
+            && strpos($ctrl, '\\') === false
+            && $this->config['namespace'] !== '\\'
         ) {
             // Use the namespace of the applications' contollers
             $ctrl = $this->config['namespace'] . '\\' . $ctrl;
