@@ -3,9 +3,10 @@ namespace Onionimbus\System;
 
 class Router
 {
-
     private $routes = [];
     private $config = [];
+    
+    // Dependencies to inject:
     private $inject = [
         'database' => null,
         'template' => null
@@ -14,7 +15,10 @@ class Router
     public function __construct($routes = [])
     {
         foreach ($routes as $i => $r) {
+            
             if (\strpos($i, ':') === false) {
+                // No colon in the route index indicates no explicit port...
+                
                 if (\preg_match(
                     '#^'.\str_replace(
                         ['.','*'],
@@ -23,7 +27,10 @@ class Router
                     ),
                     $_SERVER['HTTP_HOST']
                 )) {
-                    return $this->addRoutes($r, $i);
+                    // Are we on the correct host? (We're ignoring port.)
+                    
+                   // Add the route data to our current app state:
+                    $this->addRoutes($r, $i);
                 }
             } elseif (\preg_match(
                 '#^'.\str_replace(
@@ -33,7 +40,10 @@ class Router
                 ),
                 $_SERVER['HTTP_HOST'].':'.$_SERVER['SERVER_PORT']
             )) {
-                return $this->addRoutes($r, $i);
+                // If we have an explicit port, we check both hostname and port
+                
+                // Add the route data to our current app state:
+                $this->addRoutes($r, $i);
             }
         }
     }

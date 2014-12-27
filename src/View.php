@@ -12,11 +12,14 @@ class View
      * @param string $default_template - default template to render (controller-specific)
      * @param Twig_Environment $engine - Which rendering engine should we employ?
      */
-    public function __construct($default_template = '', \Twig_Environment $engine) {
+    public function __construct(
+        $default_template = '',
+        \Twig_Environment $engine = null
+    ) {
         if (isset($default_template)) {
             $this->default_file = $default_template;
         }
-        $this->engine = $template;
+        $this->engine = $engine;
     }
 
     /**
@@ -33,7 +36,7 @@ class View
             $template = null;
         }
         return $this->template->render(
-            empty($template) ? $default_file : $template,
+            empty($template) ? $this->default_file : $template,
             $params
         );
     }
